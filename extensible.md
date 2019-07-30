@@ -27,9 +27,8 @@ The first usage (with `vd.`) is preferred, but the global usage is allowed and m
 
 Python classes normally declare and implement all methods and members in the class definition, which exists in a single source file.
 
-Using Python import as the enable mechanism, means that features can be self-contained within a single source file.
-[Python allows monkey-patching, which is useful for exactly this purpose of modular extensions.]
-
+Using Python import as the enable mechanism, means that features should be self contained within a source file.
+Python allows monkey-patching <a href='#b1' name='a'><sup>1</sup></a>, which is useful for exactly this purpose of modular extensions.
 
 VisiData achieves this with the `Extensible` class, which a few core classes inherit from.  Extensible provides some helper functions to allow these core classes to be monkey-patched easily and consistently.
 
@@ -109,3 +108,6 @@ Also, global sheets should be created on the VisiData object with `cached_proper
 This allows them to take advantage of Sheet extensions that are loaded after the module.  [Because of how Python instantiates classes, extensions monkey-patched into a class are not also added to already-instantiated objects.]
 
 For Sheet objects, this is useful to create meta-sheets (like the columns sheet), which are better created after the parent sheet's first reload, and then reused.
+
+## Footnotes
+<a name='b1' href='#a1'>1.</a> Monkey patching is adding new functionality to a module or class definition after the program started running.

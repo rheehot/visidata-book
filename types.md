@@ -21,6 +21,7 @@ Note that all types except `anytype` and `str` are considered numeric.
 {mnemonic}
 The keybindings for settings types are in a row on the shifted top left keys on a US QWERTY keyboard.
 
+
 ### Nulls
 
 In version 1.3 and earlier, there were several options like `empty_is_null` to determine which values counted as null.  But this was poorly-defined and not implemented consistently.  After 1.3 it was simplified to:

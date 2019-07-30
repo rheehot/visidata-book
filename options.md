@@ -13,7 +13,7 @@ To set the value of an option, use Python syntax:
     options.min_memory_mb = 100
     options.quitguard = True
 
-Option names should use the underscore for word breaks.  On the command-line, underscores are converted to dashes:
+Option names should use the underscore for word separators.  On the command-line, underscores are converted to dashes:
 
     $ vd --min-memory-mb=100
 
@@ -68,7 +68,7 @@ To get a dict of all options starting with `foo\_` (useful for loader options):
         - If the option affects loading, transforming, or saving, then it replay should be True.
 
 `theme()` should be used instead of `option()` if the option has no effect on the operation of the program, and can be overrided without affecting existing scripts.  The interfaces are identical.
-Theme options should start with `disp_` and `color_` and cannot be passed on the command-line
+Theme options should start with `disp_` and `color_` and cannot be passed on the command-line.
 
 #### lesser used
 

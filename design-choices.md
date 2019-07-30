@@ -1,0 +1,4 @@
+### Column oriented design
+There is another, more fundamental difference between VisiData and spreadsheet apps like Excel: being column-oriented (as opposed to cell-oriented). Cell-oriented spreadsheets are great for one-off calculations and creating a visual workflow that fits onto a single sheet, but when you get into larger datasets, you almost always want to work with columns as first-class entities. Individual cells and arbitrary cell ranges are difficult to work with at scale, with data larger than a couple hundred rows.
+
+Also, being cell-oriented makes the spreadsheet not immediately interoperable with other data tools like pandas and R/tidyverse. No single tool will handle all use cases, so it's important to keep the data in its highest-potential form, so that other tools can work their magic without having to reorganize the data first.
