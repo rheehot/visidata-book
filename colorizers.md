@@ -35,21 +35,29 @@ Curses can combine multiple non-color attributes, but can only display a single 
 
 #### `ColorAttr`
 
-`ColorAttr` is an object used to help with dynamic coloring. It contains a color stack with the list of potentially applied colors, with their precedence in mind. It stores the attributes and color separately so that the color can be updated while keeping all of the attributes. ColorAttr().attr returns the curses attribute for the highest precedence color combined with all of the stored attributed.
+`ColorAttr` is a named tuple used to help with dynamic coloring, while keeping precedence in mind. It contains a color, attributes list, and a precedence. It stores the attributes and color separately so that the color can be updated while keeping all of the attributes. ColorAttr().attr returns the curses attribute for the color combined with all of the stored attributed.
 
-- update_attr()
+- `colors.get_color(coloropt)`
+    - public api
+    - should be used instead of creating a new ColorAttr directly
+    - returns the `ColorAttr` for the `theme()` with the name `coloropt`
+
+- `update_attr()`
+    - internal use only
     - takes an existing ColorAttr and updates it with another one's color, taking precedence into account
     - if the precedence is lower, no change happens to the color
     - attributes always stack
 
 
-- getColorizers() 
+- `_getColorizers()`
+    - internal use only
     - returns all colorizers in precedence order; highest precedence first
 
-- colorize()
+- `_colorize()`
+    - internal use only
     - returns a ColorAttr for the given col/row/value
         - the curses attribute will have a list of color option names sorted highest-precedence color first
-    - 'colorize() calls all of them to see if they fire'
+    - `_colorize()` calls all of them to see if they fire'
 
 
 #### ColorsSheet
