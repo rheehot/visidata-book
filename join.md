@@ -1,26 +1,24 @@
 ## Join
 
-VisiData provides several processes for combining the columns and/or rows of two or more sheets. These all lie under the `join-` commands (bound to `&` on default).
+VisiData provides several processes for combining the columns and/or rows of two or more sheets. These are all `join-` commands (bound to `&` on default).
 
-Most joinings start by passing a list of sheets to a **JoinSheet** constructor. Sheets are then joined based on common values present within their key columns.
+Most joins pass a list of sheets to the **JoinSheet** constructor. Sheets are then joined based on common values present within their key columns.
 
-For example, the VisiData equivalent of this pandas command
-
-```
-df_cd = pd.merge(df_1, df_2, how='inner', on = 'Id'
-```
-
-is 
+For example, to do the equivalent of this pandas command:
 
 ```
-vd df_1 df_2
+df_cd = pd.merge(df_1, df_2, how='inner', on = 'Id')
 ```
 
-then set `Id` to be the key column on both sheets, press `&` and type *inner*.
+in VisiData:
+
+1. load the two sheets df_1 and df_2.
+2. set `Id` to be the key column on both sheets
+3. press `&` (`join-top2`) and type `inner` (jointype).
 
 ## JoinSheet
 #### rowdef
-The core of the **JoinSheet** is the `combinedRow`. Each `combinedRow` contains references its constituent source rows from all sheets whose keys match. If a source sheet does not share a particular key column, its reference will be a `None`.
+The core of the **JoinSheet** is the `combinedRow`. Each `combinedRow` contains references to one source row from each sheet where the keys match.  If a source sheet does not have a row with a particular key, the corresponding row reference will be a `None`.
 
 If you push the [python object]() (`^Y`) for a joined row, you will see a list of internal row objects from those other sheets.
 
@@ -29,28 +27,28 @@ Conversely, if the source is modified, the joined row may become obsolete.
 
 In a fashion, JoinSheets are similar to an [SQL view](https://en.wikipedia.org/wiki/View_(SQL)). They are connected to their origins.
 
-The selected jointype determines which of the `combinedRow`s are retained in the final **JoinSheet**. Based on the selected jointype 0 or more of the source sheet rows can Be `None` instead of a row.
+The selected jointype determines which of the `combinedRow`s are retained in the final **JoinSheet**. Based on the selected jointype, some of the source sheet rows may Be `None` instead of a row.
 
-- **inner**
-    - keep only rows which match keys on all sheets
+- `inner`
+    - keep **only rows which match keys on all sheets**
     - none of the source sheet rows can be `None`
-- **outer**
+- `outer`
     - refers to 'left outer' join from SQL. to do a 'right outer' join, reverse order of the sheets in the **SheetsSheet**
-    - keep all rows from frst selected sheet
-    - the second (or more) source sheet rows might be `None`
-    - the first source sheet rows cannot
-- **full**
+    - keep **all rows from first joined sheet**
+    - the **second** (or more) source sheet rows might be `None`
+    - the first source sheet rows cannot be None
+- `full`
     - full cross join
-    - keep all rows from all sheets (union)
+    - keep **all rows from all sheets** (union)
     - either might be `None`
-- **diff**
-    - keep only rows NOT in all sheets
+- `diff`
+    - keep **only rows with keys NOT in all sheets**
     - one of the source sheet rows MUST be `None`
-- **append**
+- `append`
     - keep all rows from all sheets (concatenation)
-- **extend**
-    - copy first selected sheet, keeping all rows and sheet type, and extend with columns from other sheets
-    - extend is a special form of outer for VisiData
+- `extend`
+    - keep **sheet type and all rows from first sheet**, and extend with columns from other sheets
+    - extend is a special form of `outer` for VisiData
         - with most other jointypes, a view is made into the sheets' data
         - Some sheets are special, and represent more than just data (e.g. the DirSheet representing files). They have actions that operate specially on those rows.
 
