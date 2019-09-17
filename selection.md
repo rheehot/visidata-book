@@ -29,6 +29,7 @@ To clear the set of selected rows before any bulk selection, set this option to 
 ### Select Rows matching the cursor row
 #### `select-equal-cell`: match only in the cursor column
 #### `select-equal-row`: match in all visible columns
+    - note that these are based on typed values (unlike the others)
 
 ### `selectedRows or rows`
 
@@ -134,9 +135,12 @@ From `selection.py`.
 - `Sheet.isSelected(row)` (O(log nSelected))
 - `Sheet.gatherBy(func(row))` (O(nRows))
 - `Sheet.selectedRows` (O(nRows))
-    - must be computed bc `_selectedRows.values()`are not sorted in sheet order.
+    - returns the selected row objects in the order that they appear in the sheet
+    - must be computed bc `_selectedRows.values()` are not sorted in sheet order.
     - a list in the same order as .rows
 - `Sheet.nSelected` (O(k))
+    - since selectedRows takes O(nRows) to compute, it is preferable to use nSelected instead of len(selectedRows)
+    - there is a general VisiData policy of using the nRows/nSelected properties instead of calling len() on something for this reason
 
 
 
@@ -146,10 +150,12 @@ From `selection.py`.
 
 - `Sheet.selectByIdx(rowIndexes)`
 - `Sheet.unselectByIdx(rowIndexes)`
+    - used by (un)select-regex since vd.searchRegex returns a list of rowid
 
 - `Sheet.select(rows)` (async, status=True, progress=True)
 - `Sheet.toggle(rows)` (async)
 - `Sheet.unselect(rows)` (async)
+    - main abstractions used by execstr should be preferably short
 
 - `Sheet.unselectAll(row)` (O(k))
 

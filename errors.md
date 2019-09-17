@@ -3,6 +3,7 @@
 - disp_error_note appears in cells with errors
 - error message itself does not appear (cell value is blank)
 - z^E on that cell shows error and stacktrace
+    - exception() will be used for things with stacktraces that you can see with ^E
 - F (freq-column) on column with errors shows only one error per type (errors are grouped by string repr)
 - freq key columns for error bins have error note
 - error messages should be displayed in freq sheet values for those bins (to differentiate error types)

@@ -1,0 +1,6 @@
+- fail() msg colored yellow and aborts
+    - used for user error e.g. user tried to do something with selectedRows, but there are none selected
+- error() msg colored red and aborts
+    - meant for internal error
+- warning() msg colored yellow, but does not abort
+    - meant for internal or user errors that are not dire
