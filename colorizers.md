@@ -33,6 +33,18 @@ Curses can combine multiple non-color attributes, but can only display a single 
 
 `func(sheet, col, row, value)` is a lambda function which should return a True value for the properties when coloropt should be applied. If coloropt is None, func() should return a coloropt (or None) instead.
 
+Set `colorizers` as a class member, and then add the `*Colorizers` to it in a list.
+
+e.g.
+```
+class DescribeSheet(ColumnsSheet):
+    ....
+    colorizers = [
+        RowColorizer(7, 'color_key_col', lambda s,c,r,v: r and r in r.sheet.keyCols),
+    ]
+    ....
+```
+
 #### `ColorAttr`
 
 `ColorAttr` is a named tuple used to help with dynamic coloring, while keeping precedence in mind. It contains a color, attributes list, and a precedence. It stores the attributes and color separately so that the color can be updated while keeping all of the attributes. ColorAttr().attr returns the curses attribute for the color combined with all of the stored attributed.
@@ -47,6 +59,10 @@ Curses can combine multiple non-color attributes, but can only display a single 
     - takes an existing ColorAttr and updates it with another one's color, taking precedence into account
     - if the precedence is lower, no change happens to the color
     - attributes always stack
+
+- `addColorizer(Colorizer)`
+    - adds a colorizer the parent Sheet class
+    - every class that inherits from Sheet will now have that colorizer
 
 
 - `_getColorizers()`
