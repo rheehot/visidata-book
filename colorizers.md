@@ -1,8 +1,19 @@
 # Colorizers
 
+## Example
+
+    rc = RowColorizer(1, 'color_error', lambda s,c,r,v: v < 0)
+    sheet.addColorizer(rc)
+
+- This colorizer takes a precedence level of 1 (higher number are higher precedence).
+- If the lambda expression is True, `options.color_error` is applied to the row.
+- The lambda parameters are `sheet, column, row, value`.
+
+## Overview
+
 VisiData's various drawing tools (`clipdraw`, `plotlines`, etc) color using [curses attributes](https://docs.python.org/3/howto/curses.html#attributes-and-color), integers where each bit communicates how text should be displayed on the terminal.
 
-While, curses atrributes are versatile and efficient for the internal functions, they are not really human readable.
+While, curses attributes are versatile and efficient for the internal functions, they are not really human readable.
 
 An API was therefore built with the aims:
 1) To enable users and developers to easily tailor VisiData's coloring to their liking;
