@@ -1,74 +1,93 @@
 # Main Doc about Loader infrastructure
 
+- entire new standalone applications can be created with minimal code
+- abstractions which do the heavy lifting for most data use cases
+- the goal of this document is to provide a general overview of the big picture of how data is loaded and interfaced in VisiData.
+    - to provide a context of understanding for other parts of the book
+    - for more details on these various pieces, check out the rest of the book
+- tutorials on building a loader will follow
+
+# Loading data in VisiData at a glance
+
+- rows.md contains reload() checklist for rows
+
+- The main interface for VisiData is the Sheet.
+- `Sheet` provides a stock async reload
+- the data in sheets is loaded through calling `Sheet.reload()`
+    - reload calls `self.iterload()`
+        - self.iterload() provides an iterator for rows, by accessing the source file and yielding each rows 
+        - reload uses this iterator to set the header based on the `skip` and `header` options
+        - it then adds the rest of the rows (using `addRow`) to the sheet
+        - if an ordering has been specified sorts the sheet
+- `SequenceSheet` builds on this with a `setCols`, `newRow` and `addRow` that work best with formats whose row objects are an iterator of some sort (e.g. list, tuple)
+
+- in the tutorial, we will cover x cases
+    - creating an iterload, defining static Column objects
+
 # How to create a loader for VisiData
+
+- with tutorials, start at the lowest level, and then work your way up
+    - the higher levels come with stock tooling for interfacing with the most common aspects of data formats
 
 The process of designing a loader is:
 
-1. create an `open_foo` function that returns a new **Sheet**;
-2. write a reload() function to load the **rows**;
-3. enumerate the available **columns**;
-4. define sheet-specific **commands** to interact with the rows, columns, and cells.
+1a. create a **Sheet** subclass;
+1b. tell `vd.filetype()` about the extension and new **_Sheet**;
+2. write an `iterload()` function to yield each **row**;
+3. define the available **columns**;
+4. define sheet-specific **commands**/**options** to interact with the rows, columns, and cells.
 
 ## 1. Create a Sheet subclass
 
-When VisiData tries to open a source with filetype `foo`, it tries to call `open_foo(path)`, which should return an instance of `Sheet`, or raise an error. `path` is a `Path` object of some kind.
-
-    def open_foo(path):
-        return FooSheet(path.name, source=path)
+When VisiData tries to open a source with filetype `foo`, it searches for the filetype in the dict `vd.filetypes`. If it is present, `vd.filetypes` should return an instance of `Sheet`, or raise an error.
 
     class FooSheet(Sheet):
         rowtype = 'foobits'
 
-- The `Sheet` constructor takes the new sheet name as its first argument.
-Any other keyword arguments are set as attributes on the new instance.
-- Storing the `Path` as `source` is sufficient for most loaders, and so the subclass constructor can generally be omitted.
+    vd.filetype('foo', FooSheet)
+
 - The `rowtype` is for display purposes only.  It should be **plural**.
 When a sheet is loaded in VisiData, the number of rows, along with the rowtype, will be displayed on the bottom right status.
+- `vd.filetype('foo', FooSheet)` stores the key 'foo', along with `FooSheet` in `vd.filetypes`
 
 
-## 2. Load data into rows
+## 2. Load data into rows, and yield them one-by-one
 
 `reload()` is called when the Sheet is first pushed, and thereafter by the user with `^R`.
+The stock `reload()` iterates through the rows returned by `iterload`.
 
-Using the Sheet `source`, `reload` populates `rows`:
+The stock `reload()` suits most cases just fine.
+Each loader then defines an `iterload`, which uses the Sheet `source` to populate and then yield `rows`:
 
     class FooSheet(Sheet):
         rowtype = 'foobits'  # rowdef: foolib.Bar object
-        def reload(self):
-            self.rows = []
+        def iterload(self):
             for r in crack_foo(self.source):
-                self.addRow(r)
+                yield r
 
 - A `rowdef` comment should declare the **internal structure of each row**.
-- `rows` must be set to a **new list object**; do **not** call `list.clear()`.
 
-### Making the loader asynchronous
+### Supporting asynchronous loaders
 
-The above code will probably work just fine for smaller datasets, but a large enough dataset will cause the interface to freeze.
-Fortunately, making an [async](/docs/async) loader is pretty straightforward:
+Large enough datasets will cause the interface to freeze.
+Fortunately, the stock `reload` and the `iterload` structure results in an [async](/docs/async) loader on default.
+Since rows are yielded **one at a time**, they become available as they are loaded, and `reload` itself is decorated with an `@asyncthread`, which causes it to be launched in a new thread.
 
-1. Add `@asyncthread` decorator on the `reload` method, which causes it to be launched in a new thread.
+Further things to take into account:
+- All row iterators should be wrapped with [`Progress`](/docs/async#Progress).  This updates the **progress percentage** as it passes each element through.
+- Do not depend on the order of `rows` after they are added; e.g. do not reference `rows[-1]`.  The order of rows may change during an asynchronous loader.
+- Catch any `Exception`s that might be raised while handling a specific row, and add them as the row instead.  Never use a bare `except:` clause or the loader thread will not be cancelable with `Ctrl+C`.
 
-2. Wrap the iterator with [`Progress`](/docs/async#Progress).  This updates the **progress percentage** as it passes each element through.
-
-3. Append each row **one at a time**.  Do not use a list comprehension; rows should become available as they are loaded.
-
-4. Do not depend on the order of `rows` after they are added; e.g. do not reference `rows[-1]`.  The order of rows may change during an asynchronous loader.
-
-5. Catch any `Exception`s that might be raised while handling a specific row, and add them as the row instead.  Never use a bare `except:` clause or the loader thread will not be cancelable with `Ctrl+C`.
-
-#### async example
+#### Progress and Exception example
     class FooSheet(Sheet):
         ...
-        @asyncthread
-        def reload(self):
-            self.rows = []
+        def iterload(self):
             for bar in Progress(foolib.iterfoo(self.source.open_text())):
                 try:
                     r = foolib.parse(bar)
                 except Exception as e:
                     r = e
-                self.addRow(r)
+                yield r
 
 
 Test the loader with a large dataset to make sure that:
@@ -92,7 +111,7 @@ Each sheet has a unique list of `columns`. Each `Column` provides a different vi
         ]
 
 In general, set `columns` as a class member.  If the columns aren't known until the data is being loaded,
-`reload()` should first call `self.columns.clear()`, and then call `self.addColumn(col)` for each column at the earliest opportunity.
+**Sheet**'s `__init__()` will check if `self.columns` was set and add each column at the earliest opportunity.
 
 ### Column properties
 
@@ -171,9 +190,6 @@ This would be a completely functional read-only viewer for the fictional foolib.
 
     from visidata import *
 
-    def open_foo(p):
-        return FooSheet(p.name, source=p)
-
     class FooSheet(Sheet):
         rowtype = 'foobits'  # rowdef: foolib.Bar object
         columns = [
@@ -183,19 +199,19 @@ This would be a completely functional read-only viewer for the fictional foolib.
             Column('baz', type=int, getter=lambda col,row: row.inside[1]*100)
         ]
 
-        @asyncthread
-        def reload(self):
+        def iterload(self):
             import foolib
 
-            self.rows = []
             for bar in Progress(foolib.iterfoo(self.source.open_text())):
                 try:
                     r = foolib.parse(bar)
                 except Exception as e:
                     r = e
-                self.addRow(r)
+                yield r
 
     FooSheet.addCommand('b', 'reset-bar', 'cursorRow.set_bar(0)')
+
+    vd.filetype('foo', FooSheet)
 
 ## Extra Credit: create a saver
 
