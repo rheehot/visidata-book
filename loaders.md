@@ -76,7 +76,7 @@ Since rows are yielded **one at a time**, they become available as they are load
 Further things to take into account:
 - All row iterators should be wrapped with [`Progress`](/docs/async#Progress).  This updates the **progress percentage** as it passes each element through.
 - Do not depend on the order of `rows` after they are added; e.g. do not reference `rows[-1]`.  The order of rows may change during an asynchronous loader.
-- Catch any `Exception`s that might be raised while handling a specific row, and add them as the row instead.  Never use a bare `except:` clause or the loader thread will not be cancelable with `Ctrl+C`.
+- Catch any `Exception`s that might be raised while handling a specific row, and add them as the row instead.  If `Exception` handling is missing within iterload, rows will stop loading upon hitting an `Exception`. Never use a bare `except:` clause or the loader thread will not be cancelable with `Ctrl+C`.
 
 #### Progress and Exception example
     class FooSheet(Sheet):
@@ -88,7 +88,6 @@ Further things to take into account:
                 except Exception as e:
                     r = e
                 yield r
-
 
 Test the loader with a large dataset to make sure that:
 
