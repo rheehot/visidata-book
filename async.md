@@ -1,4 +1,4 @@
-# Asynchronous processing
+# Asynchronous processing (visidata.threads)
 
 ## Maintaining a responsive interface
 
@@ -11,8 +11,10 @@ In fact, anything that iterates through all rows (there may be millions) or all 
 
 ## [dev] `@asyncthread`
 
-Use the `@asyncthread` decorator on a function to make it execute in a thread.
+Add the `@asyncthread` decorator to a function, so calls to it will spawn a new thread.
 The return value is the spawned thread (which can often be ignored by the caller); the return value of the original function is effectively lost.
+
+Note, that if you chain decorators, `@asyncthread` should be the closest decorator to the function. Otherwise, `@asyncthread` will spawn a new thread for the *act of decorating*, and not for the function call itself.
 
 Cells which are being computed in a separate thread should have that thread as their value until their result is available.
 This will show the `options.disp_pending` notation and allow the user to interact with the specific thread (via e.g. `z^Y` and others).
