@@ -214,10 +214,10 @@ This would be a completely functional read-only viewer for the fictional foolib.
 
 ## Extra Credit: create a saver
 
-A full-duplex loader requires a **saver**.  The saver iterates over all `rows` and `visibleCols`, calling `getValue`, `getDisplayValue` or `getTypedValue`, and saves the results in the format of that filetype. Savers can be decorated with `@Sheet.api` in order to make them available to all sheet types.
+A full-duplex loader requires a **saver**.  The saver iterates over all `rows` and `visibleCols`, calling `getValue`, `getDisplayValue` or `getTypedValue`, and saves the results in the format of that filetype. Savers should be decorated with `@VisiData.api` in order to make them available through the `vd` object's scope.
 
-    @Sheet.api
-    def save_foo(path, sheet):
+    @VisiData.api
+    def save_foo(vd, path, sheet):
         with path.open_text(mode='w') as fp:
             for i, row in enumerate(Progress(sheet.rows)):
                 for col in sheet.visibleCols:
