@@ -30,9 +30,15 @@ An unqualified `except:` clause is bad practice (as always); when used in an asy
 
 ### Wait for threads to finish
 
-`sync(expectedThreads)` will wait for all but some number of `expectedThreads` to finish.
+`sync(expectedThreads)` will wait for all but some number of `expectedThreads` to finish. Functions decorated with `@asyncsingle` will not be waited for.
 
 This will only rarely be useful.
+
+### asyncsingle
+
+`asyncsingle` is similar to `asyncthread`, except with two key differences:
+* only a single thread of that decorated function is permitted to exist; if a second thread is spawned, the first will be aborted
+* `sync()` wil not wait for the decorated funciton to finish executing
 
 # Threads Sheet (`^T`)
 
