@@ -1,6 +1,6 @@
 # Colorizers
 
-## Example
+## Examples
 
     rc = RowColorizer(1, 'color_error', lambda s,c,r,v: v < 0)
     sheet.addColorizer(rc)
@@ -8,6 +8,27 @@
 - This colorizer takes a precedence level of 1 (higher number are higher precedence).
 - If the lambda expression is True, `options.color_error` is applied to the row.
 - The lambda parameters are `sheet, column, row, value`.
+
+```python
+@Sheet.command('1', 'equal-3', 'reverse cells == 3')
+def equal3(sheet):
+    c = CellColorizer(0, 'reverse', lambda s,c,r,v: v == 3)
+    sheet.addColorizer(c)
+    vd.addUndo(sheet.removeColorizer, c)
+```
+
+### Default Colorizers
+
+Below are the default Colorizers from the source code.
+
+
+    CellColorizer(2, 'color_default_hdr', lambda s,c,r,v: r is None),
+    ColumnColorizer(2, 'color_current_col', lambda s,c,r,v: c is s.cursorCol),
+    ColumnColorizer(1, 'color_key_col', lambda s,c,r,v: c and c.keycol),
+    CellColorizer(0, 'color_default', lambda s,c,r,v: True),
+    RowColorizer(2, 'color_selected_row', lambda s,c,r,v: s.isSelected(r)),
+    RowColorizer(1, 'color_error', lambda s,c,r,v: isinstance(r, (Exception, TypedExceptionWrapper))),
+
 
 ## Overview
 
@@ -34,7 +55,7 @@ With default colors, it is recommended that the second term be a basic color, to
 Upon startup, a `ColorMaker` object is created. For each `theme()`, it translates the color strings into curses attributes. The setup `ColorMaker` is then importable in VisiData as `colors`. It contains a key for each color option name associated with its converted curses attribute (e.g. colors.color_graph_hidden or colors['color_graph_hidden']).
 
 
-#### `RowColorizer`, `CellColorizer`, `ColumnColorizer`
+#### `RowColorizer`, `CellColorizer`, `ColumnColorizer(precdence, coloropt, func(sheet, col, row, value))`
 
 A colorizer object is a simple named tuple, which VisiData employs to do property based coloring. Colorizers come in the form of `RowColorizer` (colors entire rows), `CellColorizer` (colors a single cell), and `ColumnColorizer` (colors an entire column).
 
