@@ -25,6 +25,18 @@ def equal3(sheet):
 - If the cell value is 3, then the cell will be 'reversed' color
 - This adds an Undo command using `sheet.removeColorizer`, to remove the colorizer.
 
+### Alternating Row Colorizer
+
+    sheet.addColorizer(RowColorizer(10, "color_row_alt", lambda s,c,r,v: r and s.rowindex(r) % 2))'
+
+- This requires the [`rownum` plugin](https://github.com/saulpw/visidata/blob/develop/plugins/rownum.py)
+    - This plugin provides the rowindex() method, which provides an integer index of the row.
+    - It also provides a prev() method, which can be used to inspect the previous row.
+-  Alternate column colors could be done using Sheet.visibleCols.index(c)
+-  The `r` parameter to the lambda can be None, like when called on the column headings.
+    - Use the leading `r and expression` idiom to protect against None values.
+- This expects there to be 'color_row_alt' option, which needs to be added in .visidatarc.
+    - A color specification could be used instead like 'blue', 'reverse' or '238'
 
 ### Default Colorizers
 
