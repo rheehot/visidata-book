@@ -20,3 +20,9 @@ Only one sheet can be seen at a time anyway.
 [In 1.x, Sheets were loaded the first time they are pushed.  This was not a perfect solution.]
 
 In 2.x, sheets are loaded (by calling `Sheet.reload()`) if its `.rows` is the `UNLOADED` object before `draw()` is called.
+
+## IndexSheet
+
+If a format contains multiple sheets, the toplevel loader should inherit from `IndexSheet`, which has a rowdef of `Sheet`.
+
+Thus `open-row` (`Enter`) pushes the sheet onto the stack.

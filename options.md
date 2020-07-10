@@ -1,13 +1,27 @@
 ## Options
 
-### `options-global` (`Shift+O`) for global options
+### Options hierarchy
+
+1. runtime override (e.g. via OptionsSheet)
+2. jl
+"global": default specified in option() definition
+        2. "override": in order of program execution:
+            a. .visidatarc
+            b. command-line options, applied on top of the overrides in .visidatarc)
+            c. at runtime via 'O'ptions meta-sheet
+        3. objname(type(obj)): current sheet class and parents, recursively
+        4. objname(obj): the specific sheet instance
+            a. can override at runtime, replace value for sheet instance
+
+
+### `options-sheet` (`Shift+O`) for this specific sheet options
+
+### `options-global` (`g Shift+O`) for global options
   - changes affect all sheets unless overridden for a specific sheet
 
-### `options-sheet` (`z Shift+O`) for this specific sheet
-
-
 ###
-To set the value of an option, use Python syntax:
+
+To override the value of an option, use Python syntax in `.visidatarc`:
 
     options.clipboard_copy_cmd = 'xclip -selection primary'
     options.min_memory_mb = 100
@@ -17,7 +31,7 @@ Option names should use the underscore for word separators.  On the command-line
 
     $ vd --min-memory-mb=100
 
-The maximum option name length should be 20.
+Option names should have 20 characters or fewer.
 
 
 ### [dev] api
@@ -47,10 +61,20 @@ To get a dict of all options starting with `foo\_` (useful for loader options):
     options('foo_')
 
 
+- command-line options need to override class-specific options
+- but some classes need to forcibly set what value to use, and  for e.g. 'header' (a DirSheet should not consume the first few files to construct the column names; or at least, it should be quite difficult)
+- ultimate solution is probably sheet specific options on the cmdline
+- objects could set for now, can 
+
+
+
+
 ### ref
 
 - OptionsObject.get(k, obj)
 - OptionsObject.set(k, v, obj)
+- OptionsObject.unset(k, obj)
+  - different than setting v=None
 - OptionsObject.getdefault(k)
    - use for options metasheets
 - OptionsObject.setdefault(k)

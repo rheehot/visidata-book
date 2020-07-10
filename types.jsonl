@@ -1,0 +1,7 @@
+{"type": "str", "description": "string", "numeric": "", "command": "type-str", "keystrokes": "~", "mnemonic": "looks like a little piece of string"}
+{"type": "date", "description": "date/time in any decipherable format", "numeric": "Y", "command": "type-date", "keystrokes": "@", "mnemonic": "\"at\" sign"}
+{"type": "int", "description": "integer", "numeric": "Y", "command": "type-int", "keystrokes": "#", "mnemonic": "\"number\" sign"}
+{"type": "float", "description": "decimal", "numeric": "Y", "command": "type-float", "keystrokes": "%", "mnemonic": "\"percent\" sign"}
+{"type": "currency", "description": "decimal with leading or trailing characters, and parsed according to locale", "numeric": "Y", "command": "type-currency", "keystrokes": "$", "mnemonic": "\"dollar\" sign"}
+{"type": "vlen", "description": "size of a container, or length of a string", "numeric": "Y", "command": "type-vlen", "keystrokes": "z#", "mnemonic": "int subtype"}
+{"type": "anytype", "description": "default generic type", "numeric": "", "command": "type-anytype", "keystrokes": "z~", "mnemonic": "even more generic than a string"}

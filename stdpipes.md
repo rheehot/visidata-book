@@ -22,6 +22,7 @@ L: output top sheet if output specified
 
 The output can be in any of the saving file formats, 14 and counting!
 `options.save_filetype` or determined by the file extension.
+The most robust savers are tsv, csv, json/jsonl, and markdown.
 
 
 ### File Format Conversion is a Null Pipeline
@@ -47,7 +48,6 @@ additional sources can also be specified in replayed command log.
 - user takes control and does whatever interactively
 
 #### `-o` <output.ext>
-   - `Ctrl+Q` aborts immediately and outputs the top sheet
-   - `q` or `gq` pop those sheets off the stack
-   - it is important to have the two modes of exit, to distinguish when to emit and when not to.
-   - [alt design] if you asked for output, it's reasonable to think you expected it and would want that to be the default, and that `Ctrl+Q` is an extra shift key to abort.
+
+   - `Ctrl+Q` aborts immediately, so there is a top sheet to output.
+   - `q` or `gq` quit the sheets first, so there are no sheets on the stack to output.

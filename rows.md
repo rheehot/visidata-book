@@ -31,7 +31,8 @@ In the code, each Sheet[1] subclass has these members:
 ### Row requirements
 
 - must be unique objects: id(row) must be unique or e.g. selection won't work
-
+- must support copying via copy()
+- should support editing (use list/namedlist instead of tuple/namedtuple)
 
 ### [dev] Sheet loading
 

@@ -31,3 +31,14 @@ These mnemonics are drawn from various sources:
 - vim commands, like `hjkl`
 - keyboard layout, like the symbols above the number keys affecting column metadata
 
+### [dev] api
+addCommand(keystroke, longname, 
+
+- BaseSheet.addCommand: for all sheets
+- Sheet.addCommand: for all tabular sheets
+- FooSheet.addCommand: for all subsheet of a specific type
+- sheet.addCommand: for an individual single sheet (very occasionally)
+
+- bindkey(keystroke, longname)
+   - , but 
+

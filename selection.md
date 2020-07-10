@@ -147,16 +147,43 @@ From `selection.py`.
 - `Sheet.selectByIdx(rowIndexes)`
 - `Sheet.unselectByIdx(rowIndexes)`
 
-- `Sheet.select(rows)` (async, status=True, progress=True)
-- `Sheet.toggle(rows)` (async)
-- `Sheet.unselect(rows)` (async)
-
-- `Sheet.unselectAll(row)` (O(k))
+- `Sheet.select(rows)` (async (O(rows), status=True, progress=True)
+- `Sheet.toggle(rows)` (async (O(rows))
+- `Sheet.unselect(rows)` (async (O(rows))
 
 - `Sheet.deleteSelected`  (async)
+- `Sheet.clearSelected`  (async)
+  - does not call unselectRow for every selected row
 
 #### [dev api] undo actions for selection commands
 
 - `undoSheetSelection`
 - `undoSelection(sheetstr)`
 
+
+##### complications
+
+###### how should delete interact with selected rows?
+
+- if it doesn't unselect the rows, then deleted rowids may be recycled, and magically selected
+   - if selection tracked by contents instead of rowid, then you can't select only some identical rows (unless we have a unique Row object for each row)
+
+- if it does unselect the rows,
+   - does it re-select them if delete is undone? (seems intuitive)  undo would have to be mended
+   - does it re-select them if they are pasted?  seems like not, and this would be too difficult anyway to implement
+
+   - on freq table, should the source rows be unselected on deletion?  (seems like not)
+   - this means that only selection commands affect source selection
+
+- freqtable overrides unselectRow for semantic reasons
+   - this is not called for clearSelected (aka on Delete)
+
+
+- Since some sheets override their selectRow and unselectRow functions, unselectAll cannot be guaranteed to be constant time.
+  - For example, the FreqTable selects/unselects the source rows when a row is selected/unselected.  unselectAll must be overridden too.
+- If a FreqTable row is deleted, then source rows should not be unselected.
+  - deletion does not affect selection status.  If the delete is undone or the row pasted back, it is 'naturally' still selected.
+  - 'gu' is not a quick operation
+- unselectAll() must be overrideable though, to provide
+
+along with the unselectedwhen along with the  , as the Sheet (they made need fast and. 
