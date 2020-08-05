@@ -1,22 +1,13 @@
 ## VisiData Pipeline
 
-VisiData opens some sources, executes a set of commands, and then outputs the top sheet.
-
-This is like ETL.
-
-Each of one of these stages, though, incorporates a tremendous amount of diversity, without much additional complexity:
-
-E: open sources
-  - read tables from files, http, databases, apis, system libraries: 63+ sources and counting!
-
-T: execute a set of commands
+VisiData opens some sources, executes a set of commands, and then possibly outputs the top sheet.
 
 The default mode of VisiData is interactive, but executing the same commands from a script will yield identical results.
 
 Use `-b -p <script.vd>` to play a set of commands from a script in non-interactive (batch) mode.
 .vd is the default extension for VisiData scripts.
 
-L: output top sheet if output specified
+output top sheet if output specified
   - `-o file` to send to a file
   - `-o -` to send to stdout (default if stdout redirected)
 
@@ -35,6 +26,21 @@ Since the data can be loaded and saved in a number of formats, this means that V
 
 ### Interactive Pipelines (without `-b`)
 
+VisiData is also pipe-friendly in interactive-mode. Data can piped into VisiData and then played with as usual. Afterwards, a single sheet can be sent to stdout.
+
+Example usecases:
+
+- Manually update (sort, filter, edit) tabular data in a pipeline (`mysql < query.sql | vd | awk 'awkitty {awk}'`).
+- Interactively pick processes to kill (`ps -ef | vd | tail -n +2 | xargs --no-run-if-empty-kill`).
+- Interactively select a list of filenames to send to the printer (`ls|vd|lpr`).
+
+#### Useful command distinctions
+
+- `Ctrl+Q` aborts immediately and outputs the top sheet
+- `quit-sheet`(`q`) or `quit-all`(`gq`) pop all sheets off the stack and do not output any
+- it is important to have the two modes of exit, to distinguish when to emit and when not to.
+- [alt design] if you asked for output, it's reasonable to think you expected it and would want that to be the default, and that `Ctrl+Q` is an extra shift key to abort.
+
 #### open sources
 
 filenames or urls passed on the command line, or data piped in (use `-f <filetype>` to indicate format).
@@ -47,7 +53,3 @@ additional sources can also be specified in replayed command log.
 - user takes control and does whatever interactively
 
 #### `-o` <output.ext>
-   - `Ctrl+Q` aborts immediately and outputs the top sheet
-   - `q` or `gq` pop those sheets off the stack
-   - it is important to have the two modes of exit, to distinguish when to emit and when not to.
-   - [alt design] if you asked for output, it's reasonable to think you expected it and would want that to be the default, and that `Ctrl+Q` is an extra shift key to abort.

@@ -31,6 +31,7 @@ As a data worker, I wanted quick access to data at all stages of the pipeline, a
 - Pragmatic behavior and defaults.
 - Expose internals, like error messages and types.
 - Optimize for keystrokes.
+- Round-trippable (vd -b data.tsv -o data.tsv should have no diffs)
 
 ## Universal Interface
 

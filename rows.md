@@ -52,3 +52,6 @@ But, it's not just an empty list, so empty sheets won't be reloaded over and ove
    - do not use .clear(); it may be referenced elsewhere
 - call addRow(row) for each row
 
+## Misc
+When `defermods.py` is installed, new rows on loaded sheets are not coloured. On new sheets, they are coloured green.
+This is because new rows are added to deferredAdds at the level of the Sheet class. Loaded sheets tend to have their own `newRow` which overrides this.

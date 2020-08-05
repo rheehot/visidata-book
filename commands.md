@@ -31,3 +31,12 @@ These mnemonics are drawn from various sources:
 - vim commands, like `hjkl`
 - keyboard layout, like the symbols above the number keys affecting column metadata
 
+
+### LazyChainMap
+LazyChainMap allows a chain of objects. It is currently used in two places:
+- LazyChainMap(vd, sheet) for execstrs
+- LazyChainMap(sheet) for column expressions.
+
+In execstrs, both `vd` attrs and `sheet` attrs can be referenced 'naked', with `sheet` or `vd` dropped. For example, in execstrs for `sheet.cursorCol` the `sheet` can be dropped, and it is just `cursorCol`.
+
+**Note**: for some reason setting locals doesn't work reliably, so you can't just `cursorColIndex = 2`, it has to be `sheet.cursorColIndex = 2`

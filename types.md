@@ -73,6 +73,10 @@ where T is the type class (like `int`, `date`, etc) and `v` is an instance of th
 
 getType(T) -> vdtype
 
+### A note on fmtstr
+- For float_fmt, old-style notation (%.02f) is used rather than new-style notation ({:.02f})
+    - this is to cohere with date_fmt, which does not have a {} version available
+
 
 ### [dev] rationale for `vlen` type
 
